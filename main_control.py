@@ -31,30 +31,31 @@ port = serial.Serial("/dev/rfcomm0", baudrate = 57600)
 
 
 def callback(movement):
-    @global port
-    if movement.pose.x == 1:
+    global port
+    print(movement)
+    if movement.linear.y > 0:
         port.write(SIDERIGHT)
-    if movement.pose.x == -1:
+    if movement.linear.y < 0:
         port.write(SIDELEFT)
-    if movement.pose.y == 1:
+    if movement.linear.x > 0:
         port.write(FORWARD)
-    if movement.pose.y == -1:
+    if movement.linear.x < 0:
         port.write(REVERSE)
-    if movement.pose.z == 1:
+    if movement.linear.z > 0:
         port.write(STAND)
-    if movement.pose.z == -1:
+    if movement.linear.z < 0:
         port.write(SIT)
-    if movement.angular.x == 1:
+    if movement.angular.x > 0:
         port.write(TURNRIGHT)
-    if movement.angular.x == -1:
+    if movement.angular.x < 0:
         port.write(TURNLEFT)
-    if movement.angular.y == 1:
+    if movement.angular.y < 0:
         port.write(WAVERIGHT)
-    if movement.angular.y == -1:
+    if movement.angular.y > 0:
         port.write(WAVELEFT)
-    if movement.angular.z == 1:
+    if movement.angular.z < 0:
         port.write(FASTADVANCE)
-    if movement.angular.z == -1:
+    if movement.angular.z < 0:
         port.write(STOPADVANCE)
 
 
@@ -62,4 +63,9 @@ if __name__=="__main__":
     rospy.loginfo( "main control robotis mini")
     rospy.init_node("robotis_mini_control")
     port.write(INITIAL)
-    command_vel = rospy.Subscriber('/robotis_mini/cmd_vel', Twist, callback)
+    command_vel = rospy.Subscriber('/cmd_vel', Twist, callback)
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        print("SHUTDOWN")
+
